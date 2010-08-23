@@ -10,8 +10,11 @@ all: testsuite
 test: testsuite
 	./testsuite/two_d_image
 
-testsuite: testsuite/two_d_image
+testsuite: testsuite/two_d_image testsuite/one_d_image
 
-testsuite/two_d_image:
+testsuite/two_d_image: testsuite/two_d_image.cpp
 	g++ testsuite/two_d_image.cpp -o testsuite/two_d_image $(INCLUDE) $(LIBS) $(LIBPATH) 
+
+testsuite/one_d_image: testsuite/one_d_image.cpp
+	g++ testsuite/one_d_image.cpp -o testsuite/one_d_image $(INCLUDE) $(LIBS) $(LIBPATH) 
 
