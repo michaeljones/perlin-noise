@@ -19,7 +19,7 @@ int main( int argv, char** argc )
 			Imf::Rgba& pixel = pixels[ j * resolution.x + i ];
 
 			float value = noise->generate( i/20.0f, j/20.0f );
-			value = value/2.0 + 1;
+			value = value/2.0 + 0.5f;
 			pixel.r = value;
 			pixel.g = value;
 			pixel.b = value;

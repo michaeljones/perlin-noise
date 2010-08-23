@@ -15,7 +15,7 @@ int main( int argv, char** argc )
 	for ( int i=0; i<resolution.x; ++i )
 	{
 		float value = noise->generate( i/20.0f );
-		value = value/2.0 + 1;
+		value = value/2.0 + 0.5f;
 
 		for ( int j=0; j<resolution.y; ++j )
 		{
