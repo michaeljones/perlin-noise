@@ -5,7 +5,8 @@
 
 #include <iostream>
 
-#include <perlin.h>
+#include <perlin/perlin.h>
+#include <perlin/fractal.h>
 
 #define ESCAPE 27
 #define KEY_Q 938
@@ -51,9 +52,11 @@ void DrawGLScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear The Screen And The Depth Buffer
 	glLoadIdentity();				// Reset The View
 
-    perlin::GeneratorFactory factory;
+	perlin::NoiseFactory noiseFactory;
+	perlin::FractalFactory factory( noiseFactory );
 
-    perlin::Noise3D* noise = factory.create3D();
+	perlin::Fractal3D* noise = factory.create3D( 20 );
+
 
 	glBegin( GL_POINTS );
 

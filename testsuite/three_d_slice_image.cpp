@@ -1,11 +1,11 @@
 
-#include <perlin.h>
+#include <perlin/perlin.h>
 
 #include <ImfRgbaFile.h>
 
 int main( int argv, char** argc )
 {
-    perlin::GeneratorFactory factory;
+    perlin::NoiseFactory factory;
 
     perlin::Noise3D* noise = factory.create3D();
 

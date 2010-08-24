@@ -1,11 +1,11 @@
 
-#include <perlin.h>
+#include <perlin/perlin.h>
 
 #include <ImfRgbaFile.h>
 
 int main( int argv, char** argc )
 {
-	perlin::GeneratorFactory factory;
+	perlin::NoiseFactory factory;
 
 	perlin::Noise2D* noise = factory.create2D();
 
@@ -18,7 +18,7 @@ int main( int argv, char** argc )
 		{
 			Imf::Rgba& pixel = pixels[ j * resolution.x + i ];
 
-			float value = noise->generate( i/20.0f, j/20.0f );
+			float value = noise->generate( i/2.0f, j/2.0f );
 			value = value/2.0 + 0.5f;
 			pixel.r = value;
 			pixel.g = value;
