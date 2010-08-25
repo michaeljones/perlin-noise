@@ -1,15 +1,17 @@
 
-#include <perlin/perlin.h>
+
+#include <perlin/turbulence.h>
 
 #include <ImfRgbaFile.h>
 
 int main( int argv, char** argc )
 {
-	perlin::NoiseFactory factory;
+	perlin::NoiseFactory noiseFactory;
+	perlin::TurbulenceFactory factory( noiseFactory );
 
-	perlin::Noise2D* noise = factory.create2D();
+	perlin::Turbulence2D* noise = factory.create2D( 60 );
 
-	Imath::V2i resolution( 500, 500 ); 
+	Imath::V2i resolution( 1000, 1000 ); 
 	Imf::Rgba* pixels = new Imf::Rgba[ resolution.x * resolution.y ];
 
 	for ( int i=0; i<resolution.x; ++i )
@@ -18,8 +20,9 @@ int main( int argv, char** argc )
 		{
 			Imf::Rgba& pixel = pixels[ j * resolution.x + i ];
 
-			float value = noise->generate( i/20.0f, j/20.0f );
-			value = value/2.0 + 0.5f;
+			// Returns [0,1] so no need to re-range
+			float value = noise->generate( i/200.0f, j/200.0f );
+
 			pixel.r = value;
 			pixel.g = value;
 			pixel.b = value;

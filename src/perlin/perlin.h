@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 namespace perlin
 {
@@ -11,8 +12,11 @@ class Noise1D
 {
 public:
 
-	Noise1D( float* gradients, int indexOffset )
-	 : m_indexOffset( indexOffset ), m_gradients( gradients ) {} 
+	Noise1D( int* indicies, float* gradients, int indexOffset, float positionOffset )
+	 : m_indicies( indicies ), 
+	   m_indexOffset( indexOffset ),
+	   m_positionOffset( positionOffset ),
+	   m_gradients( gradients ) {} 
 
 	~Noise1D()
 	{
@@ -21,7 +25,10 @@ public:
 
 	float generate( float x ) const
 	{
+		x += m_positionOffset;
+
 		int xCoord = floor( x );
+
 
 		/*
 		Using:
@@ -62,35 +69,18 @@ public:
 			print "{ %s }" % ", ".join( values )
 
 		*/
-		int P[ 256 ] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
-			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
-			89, 85, 127, 55, 201, 172, 141, 10, 92, 70, 44, 163, 217, 212, 209,
-			7, 125, 57, 36, 237, 254, 142, 97, 153, 227, 61, 27, 8, 146, 115,
-			244, 173, 240, 252, 202, 162, 236, 56, 24, 42, 205, 135, 175, 215,
-			74, 29, 198, 122, 46, 48, 188, 79, 88, 190, 77, 19, 251, 138, 206,
-			63, 1, 133, 233, 140, 32, 28, 170, 53, 38, 45, 180, 43, 59, 25,
-			184, 181, 69, 168, 255, 71, 18, 229, 204, 80, 39, 22, 152, 11, 131,
-			245, 145, 41, 178, 249, 31, 12, 134, 132, 117, 100, 26, 15, 230,
-			124, 2, 4, 154, 148, 52, 78, 83, 239, 220, 177, 248, 129, 82, 6,
-			250, 199, 14, 182, 207, 119, 33, 17, 111, 37, 130, 166, 76, 96, 13,
-			126, 147, 174, 196, 235, 95, 157, 98, 150, 143, 137, 47, 221, 67,
-			94, 161, 226, 241, 164, 156, 136, 203, 86, 120, 191, 34, 35, 54,
-			108, 72, 113, 84, 112, 116, 186, 105, 232, 225, 228, 231, 21, 187,
-			102, 64, 16, 91, 165, 200, 49, 247, 40, 242, 243, 51, 185, 253, 0,
-			246, 222, 87, 158, 3, 121, 179, 58, 194, 107, 219, 208, 139, 99,
-			23, 109, 159, 210, 171, 73, 213, 192, 234, 218, 60, 149, 183, 68,
-			123, 223, 144, 118, 75, 195, 101, 128, 65, 106, 193, 216 };
 
 		int index = ( x + m_indexOffset ) & 255;
-		return m_gradients[ P[ index ] ];
+		return m_gradients[ m_indicies[ index ] ];
 	}
 
 
 private:
 
+	int* m_indicies;
 	int m_indexOffset;
+	float m_positionOffset;
 	float* m_gradients;
-
 
 };
 
@@ -102,7 +92,7 @@ public:
 	Point2() {};
 	Point2( T _x, T _y ) : x( _x ), y( _y ) {}
 
-    T dot( Point2< T > other )
+    T dot( const Point2< T >& other ) const
 	{
 		return x * other.x + y * other.y;
 	}
@@ -118,8 +108,11 @@ class Noise2D
 {
 public:
 
-	Noise2D( FloatPoint2* gradients, int indexOffset )
-	 : m_indexOffset( indexOffset ), m_gradients( gradients ) {} 
+	Noise2D( int* indicies, FloatPoint2* gradients, int indexOffset, FloatPoint2 positionOffset )
+	 : m_indicies( indicies ),
+	   m_indexOffset( indexOffset ),
+	   m_positionOffset( positionOffset ),
+	   m_gradients( gradients ) {} 
 
 	~Noise2D()
 	{
@@ -129,8 +122,11 @@ public:
 
 	float generate( float x, float y ) const
 	{
-		int xCoord = floor( x );
-		int yCoord = floor( y );
+		x += m_positionOffset.x;
+		y += m_positionOffset.y;
+
+		const int xCoord = floor( x );
+		const int yCoord = floor( y );
 
 		/*
 		Using:
@@ -146,31 +142,34 @@ public:
 		 
 		 */
 
-		IntPoint2 a( xCoord, yCoord );
-		IntPoint2 b( xCoord + 1, yCoord );
-		IntPoint2 c( xCoord + 1, yCoord + 1 );
-		IntPoint2 d( xCoord, yCoord + 1 );
+		const IntPoint2 a( xCoord, yCoord );
+		const IntPoint2 b( xCoord + 1, yCoord );
+		const IntPoint2 c( xCoord + 1, yCoord + 1 );
+		const IntPoint2 d( xCoord, yCoord + 1 );
 
-		FloatPoint2 aGrad = getGradient( a );
-		FloatPoint2 bGrad = getGradient( b );
-		FloatPoint2 cGrad = getGradient( c );
-		FloatPoint2 dGrad = getGradient( d );
+		const FloatPoint2 aGrad = getGradient( a );
+		const FloatPoint2 bGrad = getGradient( b );
+		const FloatPoint2 cGrad = getGradient( c );
+		const FloatPoint2 dGrad = getGradient( d );
 
 		float xOffset = x - xCoord;
 		float yOffset = y - yCoord;
 
-		FloatPoint2 aOffset( xOffset, yOffset );
-		FloatPoint2 bOffset( xOffset - 1, yOffset );
-		FloatPoint2 cOffset( xOffset - 1, yOffset - 1 );
-		FloatPoint2 dOffset( xOffset, yOffset - 1 );
+		const FloatPoint2 aOffset( xOffset, yOffset );
+		const FloatPoint2 bOffset( xOffset - 1, yOffset );
+		const FloatPoint2 cOffset( xOffset - 1, yOffset - 1 );
+		const FloatPoint2 dOffset( xOffset, yOffset - 1 );
 
 		float aContrib = aGrad.dot( aOffset );
 		float bContrib = bGrad.dot( bOffset );
 		float cContrib = cGrad.dot( cOffset );
 		float dContrib = dGrad.dot( dOffset );
 
-		float xParam = 3 * xOffset * xOffset - 2 * xOffset * xOffset * xOffset;
-		float yParam = 3 * yOffset * yOffset - 2 * yOffset * yOffset * yOffset;
+		float xOffsetSq = xOffset * xOffset;
+		float yOffsetSq = yOffset * yOffset;
+
+		float xParam = 3 * xOffsetSq - 2 * xOffsetSq * xOffset;
+		float yParam = 3 * yOffsetSq - 2 * yOffsetSq * yOffset;
 
 		float abContrib = ( 1 - xParam ) * aContrib + xParam * bContrib;
 		float dcContrib = ( 1 - xParam ) * dContrib + xParam * cContrib;
@@ -178,51 +177,20 @@ public:
 		return ( 1 - yParam ) * abContrib + yParam * dcContrib;
 	}
 
-	FloatPoint2 getGradient( IntPoint2 point ) const
+	FloatPoint2 getGradient( const IntPoint2& point ) const
 	{
-		/*
-		Offsets as generated by the following python code:
-
-			import random
-
-			values = [ str( x ) for x in range( 0, 256 ) ]
-
-			random.seed( 0 )
-			random.shuffle( values )
-
-			print "{ %s }" % ", ".join( values )
-
-		*/
-		int P[ 256 ] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
-			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
-			89, 85, 127, 55, 201, 172, 141, 10, 92, 70, 44, 163, 217, 212, 209,
-			7, 125, 57, 36, 237, 254, 142, 97, 153, 227, 61, 27, 8, 146, 115,
-			244, 173, 240, 252, 202, 162, 236, 56, 24, 42, 205, 135, 175, 215,
-			74, 29, 198, 122, 46, 48, 188, 79, 88, 190, 77, 19, 251, 138, 206,
-			63, 1, 133, 233, 140, 32, 28, 170, 53, 38, 45, 180, 43, 59, 25,
-			184, 181, 69, 168, 255, 71, 18, 229, 204, 80, 39, 22, 152, 11, 131,
-			245, 145, 41, 178, 249, 31, 12, 134, 132, 117, 100, 26, 15, 230,
-			124, 2, 4, 154, 148, 52, 78, 83, 239, 220, 177, 248, 129, 82, 6,
-			250, 199, 14, 182, 207, 119, 33, 17, 111, 37, 130, 166, 76, 96, 13,
-			126, 147, 174, 196, 235, 95, 157, 98, 150, 143, 137, 47, 221, 67,
-			94, 161, 226, 241, 164, 156, 136, 203, 86, 120, 191, 34, 35, 54,
-			108, 72, 113, 84, 112, 116, 186, 105, 232, 225, 228, 231, 21, 187,
-			102, 64, 16, 91, 165, 200, 49, 247, 40, 242, 243, 51, 185, 253, 0,
-			246, 222, 87, 158, 3, 121, 179, 58, 194, 107, 219, 208, 139, 99,
-			23, 109, 159, 210, 171, 73, 213, 192, 234, 218, 60, 149, 183, 68,
-			123, 223, 144, 118, 75, 195, 101, 128, 65, 106, 193, 216 };
-		
 		int index = ( point.y + m_indexOffset ) & 255;
-		index = ( point.x + P[ index ] ) & 255;
+		index = ( point.x + m_indicies[ index ] ) & 255;
 
 		return m_gradients[ index ];
 	}
 
 private:
 
+	int* m_indicies;
 	int m_indexOffset;
+	FloatPoint2 m_positionOffset;
 	FloatPoint2* m_gradients;
-
 };
 
 template< typename T >
@@ -233,7 +201,7 @@ public:
 	Point3() {};
 	Point3( T _x, T _y, T _z ) : x( _x ), y( _y ), z( _z ) {}
 
-    T dot( Point3< T > other )
+    T dot( const Point3< T >& other ) const
 	{
 		return x * other.x + y * other.y + z * other.z;
 	}
@@ -251,8 +219,11 @@ class Noise3D
 {
 public:
 
-	Noise3D( FloatPoint3* gradients, int indexOffset )
-	 : m_indexOffset( indexOffset ), m_gradients( gradients ) {} 
+	Noise3D( int* indicies, FloatPoint3* gradients, int indexOffset, FloatPoint3 positionOffset )
+	 : m_indicies( indicies ), 
+	   m_indexOffset( indexOffset ),
+	   m_positionOffset( positionOffset ),
+	   m_gradients( gradients ) {} 
 
 	~Noise3D()
 	{
@@ -261,6 +232,10 @@ public:
 
 	float generate( float x, float y, float z ) const
 	{
+		x += m_positionOffset.x;
+		y += m_positionOffset.y;
+		z += m_positionOffset.z;
+
 		int xCoord = floor( x );
 		int yCoord = floor( y );
 		int zCoord = floor( z );
@@ -344,45 +319,18 @@ public:
 
 	FloatPoint3 getGradient( IntPoint3 point ) const
 	{
-		/*
-		Offsets as generated by the following python code:
-
-			import random
-			values = [ str( x ) for x in range( 0, 256 ) ]
-			random.seed( 0 )
-			random.shuffle( values )
-			print "{ %s }" % ", ".join( values )
-
-		*/
-		int P[ 256 ] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
-			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
-			89, 85, 127, 55, 201, 172, 141, 10, 92, 70, 44, 163, 217, 212, 209,
-			7, 125, 57, 36, 237, 254, 142, 97, 153, 227, 61, 27, 8, 146, 115,
-			244, 173, 240, 252, 202, 162, 236, 56, 24, 42, 205, 135, 175, 215,
-			74, 29, 198, 122, 46, 48, 188, 79, 88, 190, 77, 19, 251, 138, 206,
-			63, 1, 133, 233, 140, 32, 28, 170, 53, 38, 45, 180, 43, 59, 25,
-			184, 181, 69, 168, 255, 71, 18, 229, 204, 80, 39, 22, 152, 11, 131,
-			245, 145, 41, 178, 249, 31, 12, 134, 132, 117, 100, 26, 15, 230,
-			124, 2, 4, 154, 148, 52, 78, 83, 239, 220, 177, 248, 129, 82, 6,
-			250, 199, 14, 182, 207, 119, 33, 17, 111, 37, 130, 166, 76, 96, 13,
-			126, 147, 174, 196, 235, 95, 157, 98, 150, 143, 137, 47, 221, 67,
-			94, 161, 226, 241, 164, 156, 136, 203, 86, 120, 191, 34, 35, 54,
-			108, 72, 113, 84, 112, 116, 186, 105, 232, 225, 228, 231, 21, 187,
-			102, 64, 16, 91, 165, 200, 49, 247, 40, 242, 243, 51, 185, 253, 0,
-			246, 222, 87, 158, 3, 121, 179, 58, 194, 107, 219, 208, 139, 99,
-			23, 109, 159, 210, 171, 73, 213, 192, 234, 218, 60, 149, 183, 68,
-			123, 223, 144, 118, 75, 195, 101, 128, 65, 106, 193, 216 };
-		
 		int index = ( point.z + m_indexOffset ) & 255;
-		index = ( point.y + P[ index ] ) & 255;
-		index = ( point.x + P[ index ] ) & 255;
+		index = ( point.y + m_indicies[ index ] ) & 255;
+		index = ( point.x + m_indicies[ index ] ) & 255;
 
 		return m_gradients[ index ];
 	}
 
 private:
 
+	int* m_indicies;
 	int m_indexOffset;
+	FloatPoint3 m_positionOffset;
 	FloatPoint3* m_gradients;
 
 };
@@ -408,7 +356,40 @@ public:
 			gradients[ i ] = drand48() > 0.5 ? 1.0 : -1.0;
 		}
 
-		return new Noise1D( gradients, indexOffset );
+		/*
+		Offsets as generated by the following python code:
+
+			import random
+			values = [ str( x ) for x in range( 0, 256 ) ]
+			random.seed( 0 )
+			random.shuffle( values )
+			print "{ %s }" % ", ".join( values )
+
+		*/
+		int P[256] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
+			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
+			89, 85, 127, 55, 201, 172, 141, 10, 92, 70, 44, 163, 217, 212, 209,
+			7, 125, 57, 36, 237, 254, 142, 97, 153, 227, 61, 27, 8, 146, 115,
+			244, 173, 240, 252, 202, 162, 236, 56, 24, 42, 205, 135, 175, 215,
+			74, 29, 198, 122, 46, 48, 188, 79, 88, 190, 77, 19, 251, 138, 206,
+			63, 1, 133, 233, 140, 32, 28, 170, 53, 38, 45, 180, 43, 59, 25,
+			184, 181, 69, 168, 255, 71, 18, 229, 204, 80, 39, 22, 152, 11, 131,
+			245, 145, 41, 178, 249, 31, 12, 134, 132, 117, 100, 26, 15, 230,
+			124, 2, 4, 154, 148, 52, 78, 83, 239, 220, 177, 248, 129, 82, 6,
+			250, 199, 14, 182, 207, 119, 33, 17, 111, 37, 130, 166, 76, 96, 13,
+			126, 147, 174, 196, 235, 95, 157, 98, 150, 143, 137, 47, 221, 67,
+			94, 161, 226, 241, 164, 156, 136, 203, 86, 120, 191, 34, 35, 54,
+			108, 72, 113, 84, 112, 116, 186, 105, 232, 225, 228, 231, 21, 187,
+			102, 64, 16, 91, 165, 200, 49, 247, 40, 242, 243, 51, 185, 253, 0,
+			246, 222, 87, 158, 3, 121, 179, 58, 194, 107, 219, 208, 139, 99,
+			23, 109, 159, 210, 171, 73, 213, 192, 234, 218, 60, 149, 183, 68,
+			123, 223, 144, 118, 75, 195, 101, 128, 65, 106, 193, 216 };
+
+		int* indicies = new int[ 256 ];
+
+		memcpy( indicies, P, sizeof( int ) * 256 );
+
+		return new Noise1D( indicies, gradients, indexOffset, gradients[ indexOffset ] );
 	}
 
 
@@ -418,7 +399,7 @@ public:
 	{
 		FloatPoint2* gradients = new FloatPoint2[ 256 ];
 
-		srand48( 0 );
+		srand48( 10 );
 
 		for ( int i=0; i<256; ++i )
 		{
@@ -432,7 +413,40 @@ public:
 			gradients[ i ].y /= length;
 		}
 
-		return new Noise2D( gradients, indexOffset );
+		/*
+		Offsets as generated by the following python code:
+
+			import random
+			values = [ str( x ) for x in range( 0, 256 ) ]
+			random.seed( 0 )
+			random.shuffle( values )
+			print "{ %s }" % ", ".join( values )
+
+		*/
+		int P[256] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
+			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
+			89, 85, 127, 55, 201, 172, 141, 10, 92, 70, 44, 163, 217, 212, 209,
+			7, 125, 57, 36, 237, 254, 142, 97, 153, 227, 61, 27, 8, 146, 115,
+			244, 173, 240, 252, 202, 162, 236, 56, 24, 42, 205, 135, 175, 215,
+			74, 29, 198, 122, 46, 48, 188, 79, 88, 190, 77, 19, 251, 138, 206,
+			63, 1, 133, 233, 140, 32, 28, 170, 53, 38, 45, 180, 43, 59, 25,
+			184, 181, 69, 168, 255, 71, 18, 229, 204, 80, 39, 22, 152, 11, 131,
+			245, 145, 41, 178, 249, 31, 12, 134, 132, 117, 100, 26, 15, 230,
+			124, 2, 4, 154, 148, 52, 78, 83, 239, 220, 177, 248, 129, 82, 6,
+			250, 199, 14, 182, 207, 119, 33, 17, 111, 37, 130, 166, 76, 96, 13,
+			126, 147, 174, 196, 235, 95, 157, 98, 150, 143, 137, 47, 221, 67,
+			94, 161, 226, 241, 164, 156, 136, 203, 86, 120, 191, 34, 35, 54,
+			108, 72, 113, 84, 112, 116, 186, 105, 232, 225, 228, 231, 21, 187,
+			102, 64, 16, 91, 165, 200, 49, 247, 40, 242, 243, 51, 185, 253, 0,
+			246, 222, 87, 158, 3, 121, 179, 58, 194, 107, 219, 208, 139, 99,
+			23, 109, 159, 210, 171, 73, 213, 192, 234, 218, 60, 149, 183, 68,
+			123, 223, 144, 118, 75, 195, 101, 128, 65, 106, 193, 216 };
+
+		int* indicies = new int[ 256 ];
+
+		memcpy( indicies, P, sizeof( int ) * 256 );
+
+		return new Noise2D( indicies, gradients, indexOffset, gradients[ indexOffset ] );
 	}
 
 
@@ -460,7 +474,40 @@ public:
 			gradients[ i ].z /= length;
 		}
 
-		return new Noise3D( gradients, indexOffset );
+		/*
+		Offsets as generated by the following python code:
+
+			import random
+			values = [ str( x ) for x in range( 0, 256 ) ]
+			random.seed( 0 )
+			random.shuffle( values )
+			print "{ %s }" % ", ".join( values )
+
+		*/
+		int P[256] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
+			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
+			89, 85, 127, 55, 201, 172, 141, 10, 92, 70, 44, 163, 217, 212, 209,
+			7, 125, 57, 36, 237, 254, 142, 97, 153, 227, 61, 27, 8, 146, 115,
+			244, 173, 240, 252, 202, 162, 236, 56, 24, 42, 205, 135, 175, 215,
+			74, 29, 198, 122, 46, 48, 188, 79, 88, 190, 77, 19, 251, 138, 206,
+			63, 1, 133, 233, 140, 32, 28, 170, 53, 38, 45, 180, 43, 59, 25,
+			184, 181, 69, 168, 255, 71, 18, 229, 204, 80, 39, 22, 152, 11, 131,
+			245, 145, 41, 178, 249, 31, 12, 134, 132, 117, 100, 26, 15, 230,
+			124, 2, 4, 154, 148, 52, 78, 83, 239, 220, 177, 248, 129, 82, 6,
+			250, 199, 14, 182, 207, 119, 33, 17, 111, 37, 130, 166, 76, 96, 13,
+			126, 147, 174, 196, 235, 95, 157, 98, 150, 143, 137, 47, 221, 67,
+			94, 161, 226, 241, 164, 156, 136, 203, 86, 120, 191, 34, 35, 54,
+			108, 72, 113, 84, 112, 116, 186, 105, 232, 225, 228, 231, 21, 187,
+			102, 64, 16, 91, 165, 200, 49, 247, 40, 242, 243, 51, 185, 253, 0,
+			246, 222, 87, 158, 3, 121, 179, 58, 194, 107, 219, 208, 139, 99,
+			23, 109, 159, 210, 171, 73, 213, 192, 234, 218, 60, 149, 183, 68,
+			123, 223, 144, 118, 75, 195, 101, 128, 65, 106, 193, 216 };
+
+		int* indicies = new int[ 256 ];
+
+		memcpy( indicies, P, sizeof( int ) * 256 );
+
+		return new Noise3D( indicies, gradients, indexOffset, gradients[ indexOffset ] );
 	}
 
 };

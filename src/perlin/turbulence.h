@@ -1,5 +1,5 @@
-#ifndef PERLIN_FRACTAL_H
-#define PERLIN_FRACTAL_H
+#ifndef PERLIN_TURBULENCE_H
+#define PERLIN_TURBULENCE_H
 
 #include <perlin/perlin.h>
 
@@ -8,14 +8,14 @@
 namespace perlin
 {
 
-class Fractal1D
+class Turbulence1D
 {
 public:
 
-	Fractal1D( std::vector< Noise1D* > levels )
+	Turbulence1D( std::vector< Noise1D* > levels )
 	 : m_levels( levels ) {}
 
-	~Fractal1D()
+	~Turbulence1D()
 	{
 		std::vector< Noise1D* >::iterator it = m_levels.begin();
 		std::vector< Noise1D* >::iterator end = m_levels.end();
@@ -33,7 +33,7 @@ public:
 
 		for ( ; it != end; ++it )
 		{
-			value += (*it)->generate( factor * x ) / factor;
+			value += fabs( (*it)->generate( factor * x ) ) / factor;
 
 			factor += 1.0f;
 		}
@@ -48,13 +48,13 @@ private:
 };
 
 
-class Fractal2D
+class Turbulence2D
 {
 public:
-	Fractal2D( std::vector< Noise2D* > levels )
+	Turbulence2D( std::vector< Noise2D* > levels )
 	 : m_levels( levels ) {}
 
-	~Fractal2D()
+	~Turbulence2D()
 	{
 		std::vector< Noise2D* >::iterator it = m_levels.begin();
 		std::vector< Noise2D* >::iterator end = m_levels.end();
@@ -72,7 +72,7 @@ public:
 
 		for ( ; it != end; ++it )
 		{
-			value += (*it)->generate( factor * x, factor * y ) / factor;
+			value += fabs( (*it)->generate( factor * x, factor * y ) ) / factor;
 
 			factor += 1.0f;
 		}
@@ -87,13 +87,13 @@ private:
 };
 
 
-class Fractal3D
+class Turbulence3D
 {
 public:
-	Fractal3D( std::vector< Noise3D* > levels )
+	Turbulence3D( std::vector< Noise3D* > levels )
 	 : m_levels( levels ) {}
 
-	~Fractal3D()
+	~Turbulence3D()
 	{
 		std::vector< Noise3D* >::iterator it = m_levels.begin();
 		std::vector< Noise3D* >::iterator end = m_levels.end();
@@ -111,7 +111,7 @@ public:
 
 		for ( ; it != end; ++it )
 		{
-			value += (*it)->generate( factor * x, factor * y, factor * z ) / factor;
+			value += fabs( (*it)->generate( factor * x, factor * y, factor * z ) ) / factor;
 
 			factor += 1.0f;
 		}
@@ -126,14 +126,14 @@ private:
 };
 
 
-class FractalFactory
+class TurbulenceFactory
 {
 public:
-	FractalFactory( NoiseFactory& factory )
+	TurbulenceFactory( NoiseFactory& factory )
 	 : m_factory( factory ) {}
 
 
-	Fractal1D* create1D( int numLevels ) const
+	Turbulence1D* create1D( int numLevels ) const
 	{
 		int P[ 256 ] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
 			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
@@ -161,9 +161,9 @@ public:
 			levels[ i ] = m_factory.create1D( P[ i & 255 ] );
 		}
 		
-		return new Fractal1D( levels );
+		return new Turbulence1D( levels );
 	}
-	Fractal2D* create2D( int numLevels ) const
+	Turbulence2D* create2D( int numLevels ) const
 	{
 		int P[ 256 ] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
 			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
@@ -191,10 +191,10 @@ public:
 			levels[ i ] = m_factory.create2D( P[ i & 255 ] );
 		}
 		
-		return new Fractal2D( levels );
+		return new Turbulence2D( levels );
 	}
 
-	Fractal3D* create3D( int numLevels ) const
+	Turbulence3D* create3D( int numLevels ) const
 	{
 		int P[ 256 ] = { 62, 211, 5, 167, 9, 20, 189, 30, 224, 93, 176, 110,
 			155, 214, 50, 238, 81, 114, 104, 90, 151, 169, 160, 103, 197, 66,
@@ -222,7 +222,7 @@ public:
 			levels[ i ] = m_factory.create3D( P[ i & 255 ] );
 		}
 
-		return new Fractal3D( levels );
+		return new Turbulence3D( levels );
 	}
 
 private:
@@ -231,6 +231,7 @@ private:
 
 };
 
+
 }; // end namespace perlin
 
-#endif // PERLIN_FRACTAL_H
+#endif // PERLIN_TURBULENCE_H
