@@ -29,3 +29,7 @@ testsuite/three_d_slice_image: testsuite/three_d_slice_image.cpp
 testsuite/viewer: testsuite/viewer.cpp
 	g++ testsuite/viewer.cpp -o testsuite/viewer $(INCLUDE) $(LIBS) $(LIBPATH) -lglut -lGL -lGLU
 
+clean:
+	rm -f testsuite/*image
+	rm -f testsuite/viewer
+
