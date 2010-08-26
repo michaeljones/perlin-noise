@@ -35,7 +35,7 @@ public:
 		{
 			value += (*it)->generate( factor * x ) / factor;
 
-			factor += 1.0f;
+			factor *= 2.0f;
 		}
 
 		return value;
@@ -74,7 +74,7 @@ public:
 		{
 			value += (*it)->generate( factor * x, factor * y ) / factor;
 
-			factor += 1.0f;
+			factor *= 2.0f;
 		}
 
 		return value;
@@ -113,7 +113,7 @@ public:
 		{
 			value += (*it)->generate( factor * x, factor * y, factor * z ) / factor;
 
-			factor += 1.0f;
+			factor *= 2.0f;
 		}
 
 		return value;
