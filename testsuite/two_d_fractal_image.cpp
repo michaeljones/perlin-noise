@@ -5,10 +5,12 @@
 
 int main( int argv, char** argc )
 {
+	srand48( 0 );
+
 	perlin::NoiseFactory noiseFactory;
 	perlin::FractalFactory factory( noiseFactory );
 
-	perlin::Fractal2D* noise = factory.create2D( 50 );
+	perlin::Fractal2D* noise = factory.create2D( 30 );
 
 	Imath::V2i resolution( 500, 500 ); 
 	Imf::Rgba* pixels = new Imf::Rgba[ resolution.x * resolution.y ];

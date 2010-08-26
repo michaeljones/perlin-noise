@@ -3,8 +3,12 @@
 
 #include <ImfRgbaFile.h>
 
+#include <stdlib.h>
+
 int main( int argv, char** argc )
 {
+	srand48( 0 );
+
 	perlin::NoiseFactory factory;
 
 	perlin::Noise1D* noise = factory.create1D();

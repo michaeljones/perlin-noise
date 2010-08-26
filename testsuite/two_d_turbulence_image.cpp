@@ -6,10 +6,12 @@
 
 int main( int argv, char** argc )
 {
+	srand48( 0 );
+
 	perlin::NoiseFactory noiseFactory;
 	perlin::TurbulenceFactory factory( noiseFactory );
 
-	perlin::Turbulence2D* noise = factory.create2D( 60 );
+	perlin::Turbulence2D* noise = factory.create2D( 20 );
 
 	Imath::V2i resolution( 1000, 1000 ); 
 	Imf::Rgba* pixels = new Imf::Rgba[ resolution.x * resolution.y ];

@@ -52,6 +52,8 @@ void DrawGLScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear The Screen And The Depth Buffer
 	glLoadIdentity();				// Reset The View
 
+	srand48( 0 );
+
 	perlin::NoiseFactory noiseFactory;
 	perlin::FractalFactory factory( noiseFactory );
 

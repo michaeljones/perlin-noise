@@ -5,6 +5,8 @@
 
 int main( int argv, char** argc )
 {
+	srand48( 0 );
+
     perlin::NoiseFactory factory;
 
     perlin::Noise3D* noise = factory.create3D();

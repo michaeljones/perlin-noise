@@ -12,14 +12,14 @@ class Noise1D
 {
 public:
 
-	Noise1D( int* indicies, float* gradients, int indexOffset, float positionOffset )
+	Noise1D( int* indicies, float* gradients, float positionOffset )
 	 : m_indicies( indicies ), 
-	   m_indexOffset( indexOffset ),
 	   m_positionOffset( positionOffset ),
 	   m_gradients( gradients ) {} 
 
 	~Noise1D()
 	{
+		delete m_indicies;
 		delete m_gradients;
 	}
 
@@ -70,7 +70,7 @@ public:
 
 		*/
 
-		int index = ( x + m_indexOffset ) & 255;
+		int index = x & 255;
 		return m_gradients[ m_indicies[ index ] ];
 	}
 
@@ -78,7 +78,6 @@ public:
 private:
 
 	int* m_indicies;
-	int m_indexOffset;
 	float m_positionOffset;
 	float* m_gradients;
 
@@ -108,14 +107,14 @@ class Noise2D
 {
 public:
 
-	Noise2D( int* indicies, FloatPoint2* gradients, int indexOffset, FloatPoint2 positionOffset )
+	Noise2D( int* indicies, FloatPoint2* gradients, FloatPoint2& positionOffset )
 	 : m_indicies( indicies ),
-	   m_indexOffset( indexOffset ),
 	   m_positionOffset( positionOffset ),
 	   m_gradients( gradients ) {} 
 
 	~Noise2D()
 	{
+		delete m_indicies;
 		delete m_gradients;
 	}
 
@@ -179,7 +178,7 @@ public:
 
 	FloatPoint2 getGradient( const IntPoint2& point ) const
 	{
-		int index = ( point.y + m_indexOffset ) & 255;
+		int index = point.y & 255;
 		index = ( point.x + m_indicies[ index ] ) & 255;
 
 		return m_gradients[ index ];
@@ -188,7 +187,6 @@ public:
 private:
 
 	int* m_indicies;
-	int m_indexOffset;
 	FloatPoint2 m_positionOffset;
 	FloatPoint2* m_gradients;
 };
@@ -219,14 +217,14 @@ class Noise3D
 {
 public:
 
-	Noise3D( int* indicies, FloatPoint3* gradients, int indexOffset, FloatPoint3 positionOffset )
+	Noise3D( int* indicies, FloatPoint3* gradients, FloatPoint3& positionOffset )
 	 : m_indicies( indicies ), 
-	   m_indexOffset( indexOffset ),
 	   m_positionOffset( positionOffset ),
 	   m_gradients( gradients ) {} 
 
 	~Noise3D()
 	{
+		delete m_indicies;
 		delete m_gradients;
 	}
 
@@ -319,7 +317,7 @@ public:
 
 	FloatPoint3 getGradient( IntPoint3 point ) const
 	{
-		int index = ( point.z + m_indexOffset ) & 255;
+		int index = point.z & 255;
 		index = ( point.y + m_indicies[ index ] ) & 255;
 		index = ( point.x + m_indicies[ index ] ) & 255;
 
@@ -329,7 +327,6 @@ public:
 private:
 
 	int* m_indicies;
-	int m_indexOffset;
 	FloatPoint3 m_positionOffset;
 	FloatPoint3* m_gradients;
 
@@ -343,13 +340,9 @@ public:
 	NoiseFactory() {};
 
 
-	Noise1D* create1D() const { return create1D( 0 ); }
-
-	Noise1D* create1D( int indexOffset ) const
+	Noise1D* create1D() const
 	{
 		float* gradients = new float[ 256 ];
-
-		srand48( 0 );
 
 		for ( int i=0; i<256; ++i )
 		{
@@ -389,17 +382,13 @@ public:
 
 		memcpy( indicies, P, sizeof( int ) * 256 );
 
-		return new Noise1D( indicies, gradients, indexOffset, gradients[ indexOffset ] );
+		return new Noise1D( indicies, gradients, gradients[ 0 ] );
 	}
 
 
-	Noise2D* create2D() const { return create2D( 0 ); }
-
-	Noise2D* create2D( int indexOffset ) const
+	Noise2D* create2D() const
 	{
 		FloatPoint2* gradients = new FloatPoint2[ 256 ];
-
-		srand48( 10 );
 
 		for ( int i=0; i<256; ++i )
 		{
@@ -446,17 +435,13 @@ public:
 
 		memcpy( indicies, P, sizeof( int ) * 256 );
 
-		return new Noise2D( indicies, gradients, indexOffset, gradients[ indexOffset ] );
+		return new Noise2D( indicies, gradients, gradients[ 0 ] );
 	}
 
 
-	Noise3D* create3D() const { return create3D( 0 ); }
-
-	Noise3D* create3D( int indexOffset ) const
+	Noise3D* create3D() const
 	{
 		FloatPoint3* gradients = new FloatPoint3[ 256 ];
-
-		srand48( 0 );
 
 		for ( int i=0; i<256; ++i )
 		{
@@ -507,7 +492,7 @@ public:
 
 		memcpy( indicies, P, sizeof( int ) * 256 );
 
-		return new Noise3D( indicies, gradients, indexOffset, gradients[ indexOffset ] );
+		return new Noise3D( indicies, gradients, gradients[ 0 ] );
 	}
 
 };
