@@ -96,6 +96,27 @@ public:
 		return x * other.x + y * other.y;
 	}
 
+	T lengthSq() const
+	{
+		return x * x + y * y;
+	}
+
+	Point2< T > operator-( const Point2& other ) const
+	{
+		return Point2< T >( x - other.x, y - other.y );
+	}
+
+	Point2< T > operator+( const Point2& other ) const
+	{
+		return Point2< T >( x + other.x, y + other.y );
+	}
+
+	template< typename S >
+	Point2< T > operator*( const S& scalar ) const
+	{
+		return Point2< T >( x * scalar, y * scalar );
+	}
+
 	T x;
 	T y;
 };
