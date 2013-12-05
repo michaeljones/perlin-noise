@@ -1,8 +1,8 @@
 
-INCLUDE=-Isrc -I/home/mike/projects/tools/include/OpenEXR
+INCLUDE=-Isrc -I$(TOOLS)/include/OpenEXR
 
 LIBS=-lImath -lIlmImf -lpthread
-LIBPATH=-L/home/mike/projects/tools/lib
+LIBPATH=-L$(TOOLS)/lib
 
 CPPFLAGS=-pg -Wall
 
